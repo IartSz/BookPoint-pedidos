@@ -22,7 +22,7 @@ public class PedidoController {
 
     @PostMapping()
     public Pedido postPedido(@RequestBody Pedido pedido){
-        return pedidoService.crear(pedido);
+        return pedidoService.crearPedido(pedido);
     }
 
     @GetMapping()
