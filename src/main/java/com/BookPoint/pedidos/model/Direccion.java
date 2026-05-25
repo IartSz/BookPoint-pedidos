@@ -26,6 +26,9 @@ public class Direccion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idDireccion;
 
+    @Column(nullable = false)
+    private Long idUsuario;
+
     @Column(nullable = false, length = 40)
     private String calle;
 
@@ -40,8 +43,4 @@ public class Direccion {
 
     @Column(nullable = false)
     private Integer codigoPostal;
-
-    @OneToMany(mappedBy = "direccion", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Pedido> pedidos;
 }

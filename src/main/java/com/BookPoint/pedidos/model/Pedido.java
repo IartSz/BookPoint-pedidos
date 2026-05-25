@@ -1,25 +1,44 @@
 package com.BookPoint.pedidos.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.BookPoint.pedidos.enums.EstadoPedido;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
+@JsonPropertyOrder({
+    "idPedido",
+    "cliente",
+    "fecha",
+    "estado",
+    "tipoEntrega",
+    "idDireccion",
+    "subtotal",
+    "codigoCupon",
+    "total",
+    "detallePedido",
+    "items"
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,23 +51,37 @@ public class Pedido {
     private Long idPedido;
     
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long idUsuario;
+
+    @Column(nullable = false)
+    private Integer total;
     
     @Column(nullable = false)
+    @JsonProperty("cliente")
     private String nombreCliente;
 
     @Column(nullable = false)
     private String detallePedido;
 
     @Column(nullable = false)
-    private Boolean estadoPedido;
-
-    @Column(nullable = false)
+    @JsonProperty("fecha")
     private LocalDate fechaPedido;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_direccion", nullable = false)
-    @JsonBackReference
-    @ToString.Exclude
-    private Direccion direccion;
+    private Long idDireccion;
+    private String tipoEntrega;
+
+    private String codigoCupon;
+    @JsonIgnore
+    private Long idCupon;
+    private Double subtotal;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @JsonProperty("estado")
+    private EstadoPedido estadoPedido;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ItemPedido> items = new ArrayList<>();
 }
