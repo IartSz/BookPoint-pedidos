@@ -37,11 +37,15 @@ public class PedidoController {
 
 
     @GetMapping()
-    public ResponseEntity<List<Pedido>> getPedidos(){
+    public ResponseEntity<?> getPedidos(){
         try{
-            return ResponseEntity.ok(pedidoService.listar());
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+            List<Pedido> pedidos = pedidoService.listar();
+            if(pedidos.isEmpty()){
+                return new ResponseEntity<>("No hay pedidos registrados", HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(pedidos, HttpStatus.OK);
+        } catch(RuntimeException e){
+            return new ResponseEntity<>("Error al obtener pedidos", HttpStatus.CONFLICT);
         }
     }
 
@@ -50,9 +54,9 @@ public class PedidoController {
     public ResponseEntity<?> deletePedido(@PathVariable Long id){
         try{
             pedidoService.eliminar(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return new ResponseEntity<>("Pedido eliminado correctamente", HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>("Pedido no encontrado", HttpStatus.NOT_FOUND);
         }
     }
 }

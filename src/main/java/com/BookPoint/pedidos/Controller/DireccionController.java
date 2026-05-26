@@ -18,13 +18,15 @@ public class DireccionController {
     private DireccionService direccionService;
 
     @PostMapping
-    public ResponseEntity<Direccion> postDireccion(@RequestBody Direccion direccion){
-        Direccion nueva;
+    public ResponseEntity<?> postDireccion(@RequestBody Direccion direccion){
         try{
-            nueva = direccionService.guardarDireccion(direccion);
+            Direccion nueva = direccionService.guardarDireccion(direccion);
+            if(nueva == null){
+                return new ResponseEntity<>("No se pudo crear la direccion", HttpStatus.NOT_FOUND);
+            }
             return new ResponseEntity<>(nueva, HttpStatus.CREATED);
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>("Error al crear la direccion", HttpStatus.CONFLICT);
         }
     }
 }
