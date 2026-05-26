@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,28 +22,37 @@ public class DireccionController {
     private DireccionService direccionService;
 
     @GetMapping
-    public ResponseEntity<?> getDirecciones(){
-        try{
+    public ResponseEntity<?> getDirecciones() {
+        try {
             List<Direccion> direcciones = direccionService.listarDirecciones();
-            if(direcciones.isEmpty()){
+            if (direcciones.isEmpty()) {
                 return new ResponseEntity<>("No hay direcciones registradas", HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(direcciones, HttpStatus.OK);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return new ResponseEntity<>("Error al obtener direcciones", HttpStatus.CONFLICT);
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> postDireccion(@RequestBody Direccion direccion){
-        try{
+    public ResponseEntity<?> postDireccion(@RequestBody Direccion direccion) {
+        try {
             Direccion nueva = direccionService.guardarDireccion(direccion);
-            if(nueva == null){
+            if (nueva == null) {
                 return new ResponseEntity<>("No se pudo crear la direccion", HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(nueva, HttpStatus.CREATED);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return new ResponseEntity<>("Error al crear la direccion", HttpStatus.CONFLICT);
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        Direccion buscado = direccionService.findById(id).orElse(null);
+        if (buscado == null) {
+            return new ResponseEntity<>("Direccion con id " + id + " no existe", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(buscado, HttpStatus.OK);
     }
 }
