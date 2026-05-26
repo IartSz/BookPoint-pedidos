@@ -26,19 +26,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @JsonPropertyOrder({
     "idPedido",
+    "mensajeConfirmacion",
     "cliente",
     "fecha",
-    "estado",
     "tipoEntrega",
-    "idDireccion",
+    "direccionEnvio",
     "subtotal",
     "codigoCupon",
     "total",
-    "detallePedido",
+    "resumenCompra",
     "items"
 })
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -62,23 +64,26 @@ public class Pedido {
     private String nombreCliente;
 
     @Column(nullable = false)
-    private String detallePedido;
-
-    @Column(nullable = false)
     @JsonProperty("fecha")
     private LocalDate fechaPedido;
     
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long idDireccion;
     private String tipoEntrega;
+    private String direccionEnvio;
 
     private String codigoCupon;
     @JsonIgnore
     private Long idCupon;
     private Double subtotal;
 
+    private String mensajeConfirmacion;
+    private String resumenCompra;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @JsonProperty("estado")
+    @JsonIgnore
     private EstadoPedido estadoPedido;
 
     @JsonManagedReference
