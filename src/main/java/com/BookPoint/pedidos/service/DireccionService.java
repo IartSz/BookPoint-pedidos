@@ -18,7 +18,7 @@ public class DireccionService {
         return direccionRepository.save(direccion);
     }
 
-    public List<Direccion> listarDireccion(){
+    public List<Direccion> listarDirecciones(){
         return direccionRepository.findAll();
     }
 
