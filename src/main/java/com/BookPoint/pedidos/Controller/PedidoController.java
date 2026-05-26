@@ -59,4 +59,13 @@ public class PedidoController {
             return new ResponseEntity<>("Pedido no encontrado", HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+    Pedido buscado = pedidoService.findById(id).orElse(null);
+    if (buscado == null) {
+        return new ResponseEntity<>("Pedido con id " + id + " no existe", HttpStatus.NOT_FOUND);
+    }
+    return new ResponseEntity<>(buscado, HttpStatus.OK);
+}
 }
