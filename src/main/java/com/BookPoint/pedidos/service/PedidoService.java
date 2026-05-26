@@ -61,13 +61,13 @@ public class PedidoService {
     }
 
     private CarroDTO obtenerCarro(Long idCarro) {
-        String urlCarro = "http://localhost:8082/api/carrito/" + idCarro;
+        String urlCarro = "http://localhost:8082/api/v1/carrito/" + idCarro;
         return restTemplate.getForObject(urlCarro, CarroDTO.class);
     }
 
     private Pedido construirPedidoBase(CarroDTO carro) {
 
-        String urlUsuario = "http://localhost:8083/api/usuarios/" + carro.getIdUsuario();
+        String urlUsuario = "http://localhost:8083/api/v1/usuarios/" + carro.getIdUsuario();
         UsuarioDTO usuario = restTemplate.getForObject(urlUsuario, UsuarioDTO.class);
 
         Pedido pedido = new Pedido();
@@ -131,7 +131,7 @@ public class PedidoService {
 
         if (pedido.getCodigoCupon() != null && !pedido.getCodigoCupon().isEmpty()) {
 
-            String urlCupon = "http://localhost:8085/api/cupones/" + pedido.getCodigoCupon();
+            String urlCupon = "http://localhost:8085/api/v1/cupones/" + pedido.getCodigoCupon();
             CuponDescuentoDTO cupon = restTemplate.getForObject(urlCupon, CuponDescuentoDTO.class);
 
             if (cupon != null && cupon.getActivo()
