@@ -44,19 +44,17 @@ public class PedidoService {
         aplicarCupon(pedido);
         cargarDireccion(pedido);
         pedido.setMensajeConfirmacion(
-            "Gracias por tu compra, " + pedido.getNombreCliente()
-            + ". Tu pedido fue recibido correctamente."
-        );
+                "Gracias por tu compra, " + pedido.getNombreCliente()
+                        + ". Tu pedido fue recibido correctamente.");
 
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
         pedidoGuardado.setResumenCompra(
-            "Pedido #" + pedidoGuardado.getIdPedido() +
-            "\nCliente: " + pedidoGuardado.getNombreCliente() + 
-            "\nEntrega: " + pedidoGuardado.getDireccionEnvio() + 
-            "\nSubtotal: $" + pedidoGuardado.getSubtotal() +
-            "\nCupón: " + pedidoGuardado.getCodigoCupon() +
-            "\nTotal: $" + pedidoGuardado.getTotal()
-        );
+                "Pedido #" + pedidoGuardado.getIdPedido() +
+                        "\nCliente: " + pedidoGuardado.getNombreCliente() +
+                        "\nEntrega: " + pedidoGuardado.getDireccionEnvio() +
+                        "\nSubtotal: $" + pedidoGuardado.getSubtotal() +
+                        "\nCupón: " + pedidoGuardado.getCodigoCupon() +
+                        "\nTotal: $" + pedidoGuardado.getTotal());
 
         return pedidoRepository.save(pedidoGuardado);
     }
@@ -121,8 +119,7 @@ public class PedidoService {
         } catch (HttpClientErrorException.Conflict e) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "Stock insuficiente o producto no encontrado"
-            );
+                    "Stock insuficiente o producto no encontrado");
         }
     }
 
@@ -150,25 +147,23 @@ public class PedidoService {
     }
 
     private void cargarDireccion(Pedido pedido) {
-
-    if ("ENVIO".equalsIgnoreCase(pedido.getTipoEntrega())) {
-
-        Direccion direccion = direccionRepository
-                .findById(pedido.getIdDireccion())
-                .orElse(null);
-
-        if (direccion != null) {
-            pedido.setDireccionEnvio(
-                    direccion.getCalle() + " " + direccion.getNumero()
-                    + ", " + direccion.getComuna()
-                    + ", " + direccion.getCiudad()
-            );
+        if ("ENVIO".equalsIgnoreCase(pedido.getTipoEntrega())) {
+            Direccion direccion = direccionRepository
+                    .findById(pedido.getIdDireccion())
+                    .orElse(null);
+            if (direccion != null) {
+                pedido.setDireccionEnvio(
+                        direccion.getCalle() + " " + direccion.getNumero()
+                                + ", " + direccion.getComuna()
+                                + ", " + direccion.getCiudad());
+            }
+        } else {
+            pedido.setTipoEntrega("RETIRO");
+            pedido.setIdDireccion(null);
+            pedido.setDireccionEnvio("Retiro en tienda");
         }
-
-    } else {
-        pedido.setDireccionEnvio("Retiro en tienda");
     }
-}
+
 
     public List<Pedido> listar() {
         return pedidoRepository.findAll();
@@ -180,5 +175,5 @@ public class PedidoService {
 
     public Optional<Pedido> findById(Long id) {
         return pedidoRepository.findById(id);
-}
+    }
 }
