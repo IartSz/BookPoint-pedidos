@@ -25,4 +25,17 @@ public class DireccionService {
     public Optional<Direccion> findById(Long id){
         return direccionRepository.findById(id);
     }
+
+    public void eliminarDireccion(Long id){
+        direccionRepository.deleteById(id);
+    }
+
+    public Direccion actualizar(Long id, Direccion direccion){
+        Direccion existente = direccionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Direccion no encontrada"));
+        existente.setCalle(direccion.getCalle());
+        existente.setNumero(direccion.getNumero()); 
+        
+        return direccionRepository.save(existente);
+    }
 }

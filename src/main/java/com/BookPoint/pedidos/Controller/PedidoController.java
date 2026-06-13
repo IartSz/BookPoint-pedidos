@@ -2,6 +2,8 @@ package com.BookPoint.pedidos.Controller;
 
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,60 +14,59 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.CollectionModel;
+
 import com.BookPoint.pedidos.model.Pedido;
 import com.BookPoint.pedidos.service.PedidoService;
 
 @RestController
-@RequestMapping("api/v1/pedidos")
+@RequestMapping("/api/v1/pedidos")
 public class PedidoController {
+
     @Autowired
     private PedidoService pedidoService;
 
-
     @PostMapping("/checkout/{idCarro}")
-    public ResponseEntity<?> checkout(@PathVariable Long idCarro){
-        try{
+    public ResponseEntity<EntityModel<Pedido>> checkout(@PathVariable Long idCarro) {
+        try {
             Pedido pedido = pedidoService.crearCarro(idCarro);
-            if(pedido == null){
-                return new ResponseEntity<>("Carro no encontrado o vacio", HttpStatus.NOT_FOUND);
+            if (pedido == null) {
+                return ResponseEntity.notFound().build();
             }
-            return new ResponseEntity<>(pedido, HttpStatus.OK);
-        } catch(RuntimeException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+            EntityModel<Pedido> pedidoModel = EntityModel.of(pedido,
+                    linkTo(methodOn(PedidoController.class).findById(pedido.getIdPedido())).withSelfRel(),
+                    linkTo(methodOn(PedidoController.class).getPedidos()).withRel("pedidos"));
+            return ResponseEntity.status(HttpStatus.CREATED).body(pedidoModel);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 
-
-    @GetMapping()
-    public ResponseEntity<?> getPedidos(){
-        try{
-            List<Pedido> pedidos = pedidoService.listar();
-            if(pedidos.isEmpty()){
-                return new ResponseEntity<>("No hay pedidos registrados", HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(pedidos, HttpStatus.OK);
-        } catch(RuntimeException e){
-            return new ResponseEntity<>("Error al obtener pedidos", HttpStatus.CONFLICT);
-        }
-    }
-
-
-    @DeleteMapping("{id}")
-    public ResponseEntity<?> deletePedido(@PathVariable Long id){
-        try{
-            pedidoService.eliminar(id);
-            return new ResponseEntity<>("Pedido eliminado correctamente", HttpStatus.OK);
-        } catch (RuntimeException e){
-            return new ResponseEntity<>("Pedido no encontrado", HttpStatus.NOT_FOUND);
-        }
+    @GetMapping
+    public CollectionModel<EntityModel<Pedido>> getPedidos() {
+        List<Pedido> pedidos = pedidoService.listar();
+        List<EntityModel<Pedido>> pedidoModels = pedidos.stream()
+                .map(pedido -> EntityModel.of(pedido,
+                        linkTo(methodOn(PedidoController.class).findById(pedido.getIdPedido())).withSelfRel()))
+                .toList();
+        return CollectionModel.of(pedidoModels,
+                linkTo(methodOn(PedidoController.class).getPedidos()).withSelfRel());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
-    Pedido buscado = pedidoService.findById(id).orElse(null);
-    if (buscado == null) {
-        return new ResponseEntity<>("Pedido con id " + id + " no existe", HttpStatus.NOT_FOUND);
+    public ResponseEntity<EntityModel<Pedido>> findById(@PathVariable Long id) {
+        return pedidoService.findById(id)
+                .map(pedido -> ResponseEntity.ok(EntityModel.of(pedido,
+                        linkTo(methodOn(PedidoController.class).findById(id)).withSelfRel(),
+                        linkTo(methodOn(PedidoController.class).getPedidos()).withRel("pedidos"))))
+                .orElse(ResponseEntity.notFound().build());
     }
-    return new ResponseEntity<>(buscado, HttpStatus.OK);
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePedido(@PathVariable Long id) {
+        pedidoService.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
 }
-}
+
