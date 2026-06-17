@@ -22,7 +22,7 @@ Microservicio encargado de la gestión de pedidos dentro del sistema **BookPoint
 
 ## 🏗️ Rol en la arquitectura
 
-`ms-pedido` orquesta la creación de un pedido consultando a otros microservicios. **`⚠️ Verificar`** según tus llamadas reales:
+`ms-pedido` orquesta la creación de un pedido consultando a otros microservicios.
 
 | Microservicio | Para qué se consulta |
 |---------------|----------------------|
@@ -99,7 +99,6 @@ Ruta configurada en el gateway:
 
 ## 📡 Endpoints
 
-> **`⚠️ Verificar`** — ajusta esta tabla a los métodos reales de tu `PedidoController`.
 
 Base: `/api/v1/pedidos`
 
@@ -131,7 +130,6 @@ Base: `/api/v1/pedidos`
 
 ## 🗂️ Modelo de datos — `Pedido`
 
-> **`⚠️ Verificar`** — campos de ejemplo, ajústalos a tu entidad real.
 
 | Campo        | Tipo        | Descripción                          |
 |--------------|-------------|--------------------------------------|
